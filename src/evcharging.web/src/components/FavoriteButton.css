@@ -1,0 +1,39 @@
+.favorite-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: transform 0.2s, opacity 0.2s;
+  line-height: 1;
+}
+
+.favorite-button:hover:not(:disabled) {
+  transform: scale(1.2);
+}
+
+.favorite-button:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+.favorite-button.loading {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.favorite-button:disabled {
+  cursor: not-allowed;
+}
+
+.favorite-button.is-favorite {
+  animation: heartbeat 0.3s ease-in-out;
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}

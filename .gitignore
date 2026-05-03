@@ -1,0 +1,91 @@
+# Environment variables
+.env
+*.env
+!.env.example
+
+# Secrets and sensitive data
+appsettings.Development.json
+*.key
+*.pem
+
+# Temporary markdown files
+*_FIX.md
+*_TEMP.md
+*_DEBUG.md
+
+# VS Code and IDE
+.vscode/
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# .NET
+**/bin/
+**/obj/
+**/out/
+*.dll
+*.exe
+*.pdb
+*.cache
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Node
+**/node_modules/
+**/dist/
+**/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+**/publish/
+**/wwwroot/
+
+# Logs
+*.log
+logs/
+
+# Test files
+test-*.ps1
+test-*.html
+**/TestResults/
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Package files
+*.nupkg
+*.snupkg
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio cache/options
+.vs/
