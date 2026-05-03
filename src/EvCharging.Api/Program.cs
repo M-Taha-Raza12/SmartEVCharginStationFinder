@@ -238,7 +238,8 @@ using (var scope = app.Services.CreateScope())
             try
             {
                 db.Database.ExecuteSqlRaw(sql);
-                Console.WriteLine($"DB INIT OK: {sql[..Math.Min(60, sql.Length)].Trim()}...");
+                var preview = sql.Length > 60 ? sql.Substring(0, 60).Trim() : sql.Trim();
+                Console.WriteLine($"DB INIT OK: {preview}...");
             }
             catch (Exception ex)
             {
