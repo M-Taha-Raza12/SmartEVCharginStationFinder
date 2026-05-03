@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "EvCharging.Api.csproj",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "bin/Release/net10.0/publish"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index"
+    }
+  ]
+}
