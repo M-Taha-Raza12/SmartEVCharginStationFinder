@@ -76,8 +76,21 @@ if (!string.IsNullOrWhiteSpace(connectionString))
     try
     {
         var dataSourceBuilder = new Npgsql.NpgsqlDataSourceBuilder(connectionString);
+        
+        // Disable prepared statements for Supabase Transaction Mode pooler (port 6543)
+        dataSourceBuilder.EnableParameterLogging();
+        
         var dataSource = dataSourceBuilder.Build();
-        builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(dataSource));
+        
+        builder.Services.AddDbContext<AppDbContext>(options => 
+        {
+            options.UseNpgsql(dataSource, npgsqlOptions =>
+            {
+                // Disable prepared statements for pooler compatibility
+                npgsqlOptions.ExecutionStrategy(c => new Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy(c));
+            });
+        });
+        
         Console.WriteLine("[DB] ✅ Supabase connection configured!");
     }
     catch (Exception ex)
