@@ -117,11 +117,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .SetIsOriginAllowed(origin => 
-            {
-                Console.WriteLine($"[CORS] Checking origin: {origin}");
-                return allowedOrigins.Any(allowed => origin.Equals(allowed, StringComparison.OrdinalIgnoreCase));
-            }));
+            .WithExposedHeaders("*")
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10)));
 });
 
 builder.Services.AddScoped<JwtTokenService>();
@@ -288,6 +285,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+// CORS must be before Authentication/Authorization
 app.UseCors("ClientApp");
 app.UseAuthentication();
 app.UseAuthorization();

@@ -132,6 +132,19 @@ public class TestController(AppDbContext dbContext) : ControllerBase
         }
     }
 
+    [HttpPost("cors-test")]
+    public IActionResult CorsTest([FromBody] object data)
+    {
+        Console.WriteLine("[TEST] CORS POST endpoint hit!");
+        return Ok(new
+        {
+            success = true,
+            message = "CORS POST is working!",
+            receivedData = data,
+            timestamp = DateTime.UtcNow
+        });
+    }
+
     [HttpPost("seed-karachi-stations")]
     public async Task<IActionResult> SeedKarachiStations()
     {
