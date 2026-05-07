@@ -94,7 +94,7 @@ export function StationsPage() {
   const [showReviewModal, setShowReviewModal] = useState(false)
 
   const [bookingStationId, setBookingStationId] = useState<string>('')
-  const [bookingDate, setBookingDate] = useState('')
+  const [bookingDate, setBookingDate] = useState(new Date().toISOString().split('T')[0]) // Default to today
   const [startTime, setStartTime] = useState('14:00')
   const [durationMinutes, setDurationMinutes] = useState(60)
   const [showBookingModal, setShowBookingModal] = useState(false)
@@ -232,6 +232,12 @@ export function StationsPage() {
 
   const createBooking = async (event: FormEvent) => {
     event.preventDefault()
+    
+    if (!bookingDate) {
+      alert('Please select a booking date.')
+      return
+    }
+    
     try {
       await bookingApi.create({
         stationId: bookingStationId,
@@ -242,8 +248,10 @@ export function StationsPage() {
       await loadStations()
       setShowBookingModal(false)
       alert('Booking confirmed! Check your bookings page.')
-    } catch (error) {
-      alert('Booking failed. Please try again.')
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Booking failed. Please try again.'
+      alert(errorMessage)
+      console.error('Booking error:', error)
     }
   }
 

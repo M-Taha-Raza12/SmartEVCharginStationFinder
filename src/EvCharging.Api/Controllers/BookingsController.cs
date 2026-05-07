@@ -17,10 +17,22 @@ public class BookingsController(AppDbContext dbContext) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<BookingResponse>> Create(CreateBookingRequest request)
     {
+        Console.WriteLine($"[BOOKING CREATE] Received request: StationId={request.StationId}, Date={request.BookingDate}, Time={request.StartTime}, Duration={request.DurationMinutes}");
+        
         var userId = GetUserId();
         if (userId == Guid.Empty)
         {
+            Console.WriteLine("[BOOKING CREATE] Unauthorized - no user ID");
             return Unauthorized();
+        }
+
+        Console.WriteLine($"[BOOKING CREATE] User ID: {userId}");
+
+        // Validate booking date is not in the past
+        if (request.BookingDate < DateOnly.FromDateTime(DateTime.Today))
+        {
+            Console.WriteLine($"[BOOKING CREATE] Date is in the past: {request.BookingDate}");
+            return BadRequest(new { message = "Booking date cannot be in the past." });
         }
 
         await using var tx = await dbContext.Database.BeginTransactionAsync();
@@ -31,8 +43,11 @@ SET available_slots = available_slots - 1
 WHERE id = {request.StationId} AND available_slots > 0
 ");
 
+        Console.WriteLine($"[BOOKING CREATE] Updated {rows} rows");
+
         if (rows == 0)
         {
+            Console.WriteLine($"[BOOKING CREATE] No slots available for station {request.StationId}");
             return BadRequest(new { message = "No slots available for this station." });
         }
 
@@ -44,6 +59,7 @@ WHERE id = {request.StationId} AND available_slots > 0
 
         if (string.IsNullOrWhiteSpace(stationName))
         {
+            Console.WriteLine($"[BOOKING CREATE] Station not found: {request.StationId}");
             return NotFound(new { message = "Station not found." });
         }
 
@@ -60,6 +76,8 @@ WHERE id = {request.StationId} AND available_slots > 0
         dbContext.Bookings.Add(booking);
         await dbContext.SaveChangesAsync();
         await tx.CommitAsync();
+
+        Console.WriteLine($"[BOOKING CREATE] Booking created successfully: {booking.Id}");
 
         return Ok(new BookingResponse
         {
