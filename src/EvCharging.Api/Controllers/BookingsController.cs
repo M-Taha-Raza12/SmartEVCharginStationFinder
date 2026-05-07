@@ -28,10 +28,24 @@ public class BookingsController(AppDbContext dbContext) : ControllerBase
 
         Console.WriteLine($"[BOOKING CREATE] User ID: {userId}");
 
-        // Validate booking date is not in the past
-        if (request.BookingDate < DateOnly.FromDateTime(DateTime.Today))
+        // Parse and validate date
+        if (!DateOnly.TryParse(request.BookingDate, out var bookingDate))
         {
-            Console.WriteLine($"[BOOKING CREATE] Date is in the past: {request.BookingDate}");
+            Console.WriteLine($"[BOOKING CREATE] Invalid date format: {request.BookingDate}");
+            return BadRequest(new { message = "Invalid date format. Use YYYY-MM-DD." });
+        }
+
+        // Parse and validate time
+        if (!TimeOnly.TryParse(request.StartTime, out var startTime))
+        {
+            Console.WriteLine($"[BOOKING CREATE] Invalid time format: {request.StartTime}");
+            return BadRequest(new { message = "Invalid time format. Use HH:mm." });
+        }
+
+        // Validate booking date is not in the past
+        if (bookingDate < DateOnly.FromDateTime(DateTime.Today))
+        {
+            Console.WriteLine($"[BOOKING CREATE] Date is in the past: {bookingDate}");
             return BadRequest(new { message = "Booking date cannot be in the past." });
         }
 
@@ -67,8 +81,8 @@ WHERE id = {request.StationId} AND available_slots > 0
         {
             UserId = userId,
             StationId = request.StationId,
-            BookingDate = request.BookingDate,
-            StartTime = request.StartTime,
+            BookingDate = bookingDate,
+            StartTime = startTime,
             DurationMinutes = request.DurationMinutes,
             Status = "confirmed" // Auto-confirm for now, can be changed to "pending" for approval workflow
         };
@@ -84,8 +98,8 @@ WHERE id = {request.StationId} AND available_slots > 0
             Id = booking.Id,
             StationId = booking.StationId,
             StationName = stationName,
-            BookingDate = booking.BookingDate,
-            StartTime = booking.StartTime,
+            BookingDate = booking.BookingDate.ToString("yyyy-MM-dd"),
+            StartTime = booking.StartTime.ToString("HH:mm"),
             DurationMinutes = booking.DurationMinutes,
             Status = booking.Status
         });
@@ -124,8 +138,8 @@ WHERE id = {request.StationId} AND available_slots > 0
                     Id = b.Id,
                     StationId = b.StationId,
                     StationName = s.Name,
-                    BookingDate = b.BookingDate,
-                    StartTime = b.StartTime,
+                    BookingDate = b.BookingDate.ToString("yyyy-MM-dd"),
+                    StartTime = b.StartTime.ToString("HH:mm"),
                     DurationMinutes = b.DurationMinutes,
                     Status = b.Status
                 })
@@ -191,9 +205,21 @@ WHERE id = {booking.StationId}
             return BadRequest(new { message = "Only confirmed bookings can be updated." });
         }
 
+        // Parse and validate date
+        if (!DateOnly.TryParse(request.BookingDate, out var bookingDate))
+        {
+            return BadRequest(new { message = "Invalid date format. Use YYYY-MM-DD." });
+        }
+
+        // Parse and validate time
+        if (!TimeOnly.TryParse(request.StartTime, out var startTime))
+        {
+            return BadRequest(new { message = "Invalid time format. Use HH:mm." });
+        }
+
         // Update booking details
-        booking.BookingDate = request.BookingDate;
-        booking.StartTime = request.StartTime;
+        booking.BookingDate = bookingDate;
+        booking.StartTime = startTime;
         booking.DurationMinutes = request.DurationMinutes;
 
         await dbContext.SaveChangesAsync();
@@ -209,8 +235,8 @@ WHERE id = {booking.StationId}
             Id = booking.Id,
             StationId = booking.StationId,
             StationName = stationName ?? "Unknown Station",
-            BookingDate = booking.BookingDate,
-            StartTime = booking.StartTime,
+            BookingDate = booking.BookingDate.ToString("yyyy-MM-dd"),
+            StartTime = booking.StartTime.ToString("HH:mm"),
             DurationMinutes = booking.DurationMinutes,
             Status = booking.Status
         });

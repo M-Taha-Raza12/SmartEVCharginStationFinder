@@ -8,10 +8,10 @@ public class CreateBookingRequest
     public Guid StationId { get; set; }
 
     [Required]
-    public DateOnly BookingDate { get; set; }
+    public string BookingDate { get; set; } = string.Empty; // Format: "YYYY-MM-DD"
 
     [Required]
-    public TimeOnly StartTime { get; set; }
+    public string StartTime { get; set; } = string.Empty; // Format: "HH:mm"
 
     [Range(15, 480)]
     public int DurationMinutes { get; set; }
@@ -20,10 +20,10 @@ public class CreateBookingRequest
 public class UpdateBookingRequest
 {
     [Required]
-    public DateOnly BookingDate { get; set; }
+    public string BookingDate { get; set; } = string.Empty; // Format: "YYYY-MM-DD"
 
     [Required]
-    public TimeOnly StartTime { get; set; }
+    public string StartTime { get; set; } = string.Empty; // Format: "HH:mm"
 
     [Range(15, 480)]
     public int DurationMinutes { get; set; }
@@ -34,8 +34,8 @@ public class BookingResponse
     public Guid Id { get; set; }
     public Guid StationId { get; set; }
     public string StationName { get; set; } = string.Empty;
-    public DateOnly BookingDate { get; set; }
-    public TimeOnly StartTime { get; set; }
+    public string BookingDate { get; set; } = string.Empty; // Format: "YYYY-MM-DD"
+    public string StartTime { get; set; } = string.Empty; // Format: "HH:mm"
     public int DurationMinutes { get; set; }
     public string Status { get; set; } = string.Empty;
 }
