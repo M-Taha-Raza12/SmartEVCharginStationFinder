@@ -95,10 +95,20 @@ else
 
 builder.Services.AddCors(options =>
 {
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
+        ?? new[] { "http://localhost:5173" };
+    
+    Console.WriteLine($"[CORS] Allowed origins: {string.Join(", ", allowedOrigins)}");
+    
     options.AddPolicy("ClientApp", policy =>
-        policy.WithOrigins(builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? ["http://localhost:5173"])
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(origin => 
+            {
+                Console.WriteLine($"[CORS] Checking origin: {origin}");
+                return allowedOrigins.Any(allowed => origin.Equals(allowed, StringComparison.OrdinalIgnoreCase));
+            }));
 });
 
 builder.Services.AddScoped<JwtTokenService>();
